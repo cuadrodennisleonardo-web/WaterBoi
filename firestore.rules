@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.email == 'admin@waterboi.com') ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         getUserData().role == 'admin')
+      );
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (isAdmin() || request.auth.uid == userId);
+      allow update: if isAuthenticated() && (
+        isAdmin() || 
+        (request.auth.uid == userId && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Deliveries Collection
+    match /deliveries/{deliveryId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        isAdmin() || 
+        resource.data.employeeId == request.auth.uid
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 3. Jugs Inventory Collection
+    match /jugs/{jugId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // 4. Customers Collection
+    match /customers/{customerId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // 5. Services & Pricing Collection
+    match /services/{serviceId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // 6. Commission Payouts Collection
+    match /commissionPayouts/{payoutId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() || 
+        resource.data.employeeId == request.auth.uid
+      );
+      allow write: if isAdmin();
+    }
+
+    // 7. Audit Log Collection (Immutable)
+    match /auditLog/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
+    }
+  }
+}
