@@ -170,6 +170,7 @@ export async function renderDeliveriesPage() {
       btn.addEventListener('click', () => {
         const d = deliveries.find(item => item.id === btn.dataset.id);
         if (d) {
+          const receiptHtml = renderReceiptModal(d);
           createModal({
             title: 'Official Delivery Receipt',
             bodyContent: receiptHtml,
@@ -179,6 +180,7 @@ export async function renderDeliveriesPage() {
               return false;
             }
           });
+          if (window.lucide) window.lucide.createIcons();
         }
       });
     });

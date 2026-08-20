@@ -86,7 +86,7 @@ export async function renderMyCommissionPage() {
           <span class="stat-label">Unpaid Commission Balance</span>
           <span class="stat-value" style="color: var(--color-accent);">${formatCurrency(unpaidBalance)}</span>
         </div>
-        <div class="stat-icon-wrapper" style="color: var(--color-accent); background: rgba(0, 180, 216, 0.15);">⏳</div>
+        <div class="stat-icon-wrapper" style="color: var(--color-accent); background: rgba(0, 180, 216, 0.15);"><i data-lucide="clock"></i></div>
       </div>
     </div>
 

@@ -82,7 +82,7 @@ export async function renderCommissionsPage() {
             <span class="stat-label">Current Unpaid Payout Balance</span>
             <span class="stat-value" style="color: var(--color-warning);">${formatCurrency(grandUnpaid)}</span>
           </div>
-          <div class="stat-icon-wrapper" style="color: var(--color-warning); background: var(--color-warning-bg);">⏳</div>
+          <div class="stat-icon-wrapper" style="color: var(--color-warning); background: var(--color-warning-bg);"><i data-lucide="clock"></i></div>
         </div>
       </div>
 

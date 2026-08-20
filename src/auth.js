@@ -16,6 +16,22 @@ try {
   if (cached) currentUserProfile = JSON.parse(cached);
 } catch (e) {}
 
+let authInitialized = false;
+let authReadyResolve;
+const authReadyPromise = new Promise(resolve => {
+  authReadyResolve = resolve;
+});
+
+export function isAuthReady() {
+  return authInitialized;
+}
+
+export async function waitForAuth() {
+  if (authInitialized) return getCurrentUser();
+  await authReadyPromise;
+  return getCurrentUser();
+}
+
 const listeners = new Set();
 
 export function subscribeAuth(callback) {
@@ -76,6 +92,10 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     currentUserProfile = null;
     notifyListeners();
+  }
+  if (!authInitialized) {
+    authInitialized = true;
+    authReadyResolve();
   }
 });
 

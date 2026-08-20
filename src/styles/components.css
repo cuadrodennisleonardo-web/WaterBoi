@@ -378,3 +378,56 @@ i[data-lucide] {
   width: 2rem !important;
   height: 2rem !important;
 }
+
+/* Global Floating Tooltip for Jug Inventory Tracking */
+.global-jug-floating-tooltip {
+  position: fixed;
+  z-index: 99999;
+  background: rgba(10, 22, 40, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-warning);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75), 0 0 16px rgba(255, 209, 102, 0.25);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  width: max-content;
+  max-width: 260px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateY(4px);
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.global-jug-floating-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.global-jug-floating-tooltip.arrow-bottom::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(10, 22, 40, 0.96) transparent transparent transparent;
+}
+
+.global-jug-floating-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent rgba(10, 22, 40, 0.96) transparent;
+}
+
+

@@ -1,4 +1,4 @@
-import { getCurrentUser, subscribeAuth } from './auth.js';
+import { getCurrentUser, subscribeAuth, isAuthReady, waitForAuth } from './auth.js';
 import { renderSidebar } from './components/sidebar.js';
 import { renderNavbar } from './components/navbar.js';
 
@@ -17,6 +17,21 @@ export function navigateTo(path, queryParams = {}) {
 }
 
 export async function handleRouting() {
+  const appEl = document.getElementById('app');
+
+  // Wait for initial Firebase Auth state to resolve before deciding redirect
+  if (!isAuthReady()) {
+    if (!appEl.querySelector('.app-layout') && !appEl.querySelector('.loader-container')) {
+      appEl.innerHTML = `
+        <div class="loader-container" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div class="loader"></div>
+          <div style="margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.9rem;">Starting WaterBoi...</div>
+        </div>
+      `;
+    }
+    await waitForAuth();
+  }
+
   const { firebaseUser, profile } = getCurrentUser();
   const currentPath = window.location.pathname;
 
@@ -27,7 +42,7 @@ export async function handleRouting() {
   }
 
   // Authenticated user on /login redirected to their dashboard
-  if (firebaseUser && currentPath === '/login') {
+  if (firebaseUser && (currentPath === '/login' || currentPath === '/')) {
     if (profile?.role === 'admin') {
       navigateTo('/admin/dashboard');
     } else {
@@ -41,8 +56,6 @@ export async function handleRouting() {
     navigateTo('/employee/dashboard');
     return;
   }
-
-  const appEl = document.getElementById('app');
 
   if (currentPath === '/login') {
     appEl.innerHTML = '';
